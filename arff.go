@@ -140,14 +140,19 @@ func (dec *Decoder) Decode(v interface{}) error {
 		if err == errComment || err == errNoData {
 			continue
 		}
-		if err != nil {
-			return fmt.Errorf("arff.Decode: error at line %d: %v\n", dec.line, err)
-		}
 		break
 	}
 
+	if err == errNoData || err == errComment {
+		return io.EOF
+	}
+
+	if err != nil {
+		return fmt.Errorf("arff.Decode: error at line:%d: %v\n", dec.line, err)
+	}
+
 	if len(dec.data) != len(dec.Header.Attrs) {
-		return fmt.Errorf("arff.Decode: line #%d: invalid data (expected #%d, got #%d)",
+		return fmt.Errorf("arff.Decode: line:%d: invalid data (expected #%d, got #%d)",
 			dec.line,
 			len(dec.Header.Attrs),
 			len(dec.data),
@@ -180,9 +185,30 @@ func (dec *Decoder) Decode(v interface{}) error {
 	switch rv.Kind() {
 	case reflect.Struct:
 		attrs := dec.Header.Attrs
+		rt := rv.Type()
 		for i, attr := range attrs {
-			// FIXME: also find by tag `aarff:"boo"` ?
-			field := rv.FieldByName(attr.Name)
+			st, ok := rt.FieldByName(attr.Name)
+			if !ok {
+				nfields := rt.NumField()
+				for ifield := 0; ifield < nfields; ifield++ {
+					st = rt.Field(ifield)
+					if st.Name == strings.ToTitle(attr.Name) {
+						ok = true
+						break
+					}
+					if st.Tag.Get("arff") == attr.Name {
+						ok = true
+						break
+					}
+				}
+			}
+			if !ok {
+				return fmt.Errorf("arff.Decode: could not find a matching field for attribute [%s] in struct %T",
+					attr.Name,
+					rv.Interface(),
+				)
+			}
+			field := rv.FieldByIndex(st.Index)
 			if field.IsValid() {
 				vv := reflect.ValueOf(dec.data[i])
 				field.Set(vv)
@@ -206,6 +232,10 @@ func (dec *Decoder) parse_header() error {
 		data = bytes.TrimSpace(data)
 
 		err = dec.parse_line(data)
+		if err == errNoData {
+			continue
+		}
+
 		if err != nil {
 			return fmt.Errorf("arf.Decoder: parse error at line [%d]: %v", dec.line, err)
 		}
@@ -223,10 +253,6 @@ func (dec *Decoder) parse_header() error {
 
 func (dec *Decoder) parse_line(data []byte) error {
 	var err error
-
-	if data == nil {
-		return io.EOF
-	}
 
 	if len(data) == 0 {
 		return errNoData
@@ -270,7 +296,7 @@ func (dec *Decoder) parse_line(data []byte) error {
 					tokens = append(tokens, tok)
 				}
 			}
-			fmt.Printf("tokens: %v\n", tokens)
+			//fmt.Printf("tokens: %v\n", tokens)
 			attr_name := tokens[0]
 			attr_type := newAttrTypeFromString(tokens[1])
 			switch attr_type {
@@ -313,13 +339,13 @@ func (dec *Decoder) parse_line(data []byte) error {
 		}
 
 	case st_in_data:
-		fmt.Printf("line:%d:%v\n", dec.line, string(data))
+		//fmt.Printf("line:%d:%v\n", dec.line, string(data))
 		if len(data) == 0 {
-			fmt.Printf("line[%d]: empty line!\n", dec.line)
+			//fmt.Printf("line[%d]: empty line!\n", dec.line)
 			return errNoData
 		}
 		if data[0] == '%' {
-			fmt.Printf("line[%d]: comment\n", dec.line)
+			//fmt.Printf("line[%d]: comment\n", dec.line)
 			return errComment
 		}
 		tmp := bytes.Split(data, []byte(","))
