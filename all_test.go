@@ -2,15 +2,15 @@ package arff_test
 
 import (
 	"fmt"
-	"testing"
-	"os"
 	"io"
+	"os"
+	"testing"
 
 	"github.com/sbinet/go-arff"
 )
 
 func TestData(t *testing.T) {
-	f, err := os.Open("testdata/iris.arff") 
+	f, err := os.Open("testdata/iris.arff")
 	if err != nil {
 		t.Fatalf("error: %v\n", err)
 	}

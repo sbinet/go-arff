@@ -4,20 +4,21 @@ import (
 	"bufio"
 	"fmt"
 	//"os"
-	"io"
 	"bytes"
-	"reflect"
-	"strings"
-	"strconv"
+	"io"
 	"math"
+	"reflect"
+	"strconv"
+	"strings"
 )
 
 var (
-	errNoData = fmt.Errorf("arff.Decode: no data")
+	errNoData  = fmt.Errorf("arff.Decode: no data")
 	errComment = fmt.Errorf("arff.Decode: comment line")
 )
 
 type AttrType int
+
 const (
 	Invalid AttrType = iota
 	Numeric
@@ -66,6 +67,7 @@ func (a AttrType) String() string {
 }
 
 type state int
+
 const (
 	st_comment state = iota
 	st_in_header
@@ -73,15 +75,15 @@ const (
 )
 
 var (
-	tok_relation = []byte("@relation")
+	tok_relation  = []byte("@relation")
 	tok_attribute = []byte("@attribute")
-	tok_data = []byte("@data")
+	tok_data      = []byte("@data")
 )
 
 type Header struct {
-	Comment string
+	Comment  string
 	Relation string
-	Attrs []Attr
+	Attrs    []Attr
 }
 
 type Attr struct {
@@ -93,10 +95,10 @@ type Attr struct {
 type Decoder struct {
 	Header Header
 
-	r *bufio.Reader
+	r       *bufio.Reader
 	scanner *bufio.Scanner
-	state state
-	line int
+	state   state
+	line    int
 
 	data []interface{}
 
@@ -111,10 +113,10 @@ func NewDecoder(r io.Reader) (*Decoder, error) {
 	}
 
 	dec := &Decoder{
-		r: rr,
+		r:       rr,
 		scanner: bufio.NewScanner(rr),
-		state: st_comment,
-		line: 0,
+		state:   st_comment,
+		line:    0,
 	}
 	err := dec.parse_header()
 	if err != nil {
@@ -124,10 +126,16 @@ func NewDecoder(r io.Reader) (*Decoder, error) {
 	return dec, nil
 }
 
+func (dec *Decoder) do_scan() bool {
+	ok := dec.scanner.Scan()
+	dec.line += 1
+	return ok
+}
+
 func (dec *Decoder) Decode(v interface{}) error {
 	var err error
 
-	for dec.scanner.Scan() {
+	for dec.do_scan() {
 		err = dec.parse_line(dec.scanner.Bytes())
 		if err == errComment || err == errNoData {
 			continue
@@ -152,11 +160,11 @@ func (dec *Decoder) Decode(v interface{}) error {
 		mm, ok := v.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf(
-				"arff.Decode: invalid map type (expected map[string]interface{}, got %T)", 
+				"arff.Decode: invalid map type (expected map[string]interface{}, got %T)",
 				v,
 			)
 		}
-		for i,attr := range dec.Header.Attrs {
+		for i, attr := range dec.Header.Attrs {
 			mm[attr.Name] = dec.data[i]
 		}
 
@@ -172,7 +180,7 @@ func (dec *Decoder) Decode(v interface{}) error {
 	switch rv.Kind() {
 	case reflect.Struct:
 		attrs := dec.Header.Attrs
-		for i,attr := range attrs {
+		for i, attr := range attrs {
 			// FIXME: also find by tag `aarff:"boo"` ?
 			field := rv.FieldByName(attr.Name)
 			if field.IsValid() {
@@ -188,7 +196,7 @@ func (dec *Decoder) Decode(v interface{}) error {
 func (dec *Decoder) parse_header() error {
 	var err error
 
-	for dec.scanner.Scan() {
+	for dec.do_scan() {
 		err = dec.scanner.Err()
 		if err != nil {
 			return err
@@ -215,7 +223,14 @@ func (dec *Decoder) parse_header() error {
 
 func (dec *Decoder) parse_line(data []byte) error {
 	var err error
-	dec.line += 1
+
+	if data == nil {
+		return io.EOF
+	}
+
+	if len(data) == 0 {
+		return errNoData
+	}
 
 	switch dec.state {
 	case st_comment:
@@ -298,7 +313,7 @@ func (dec *Decoder) parse_line(data []byte) error {
 		}
 
 	case st_in_data:
-		fmt.Printf("line:%d:%v\n", dec.line,string(data))
+		fmt.Printf("line:%d:%v\n", dec.line, string(data))
 		if len(data) == 0 {
 			fmt.Printf("line[%d]: empty line!\n", dec.line)
 			return errNoData
@@ -317,13 +332,13 @@ func (dec *Decoder) parse_line(data []byte) error {
 		}
 		if len(values) != len(dec.Header.Attrs) {
 			return fmt.Errorf(
-				"invalid number of values (got=%d, expected=%d)", 
-				len(values), 
+				"invalid number of values (got=%d, expected=%d)",
+				len(values),
 				len(dec.Header.Attrs),
 			)
 		}
 		datum := make([]interface{}, 0, len(values))
-		for i,v := range values {
+		for i, v := range values {
 			attr := dec.Header.Attrs[i]
 			switch attr.Type {
 			case Numeric, Real:
@@ -373,7 +388,7 @@ func (dec *Decoder) parse_line(data []byte) error {
 			}
 		}
 		dec.data = datum
-		
+
 	}
 
 	return err

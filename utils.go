@@ -10,4 +10,3 @@ func is_in_str_slice(slice []string, value string) bool {
 }
 
 // EOF
-
