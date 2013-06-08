@@ -292,7 +292,7 @@ func (dec *Decoder) parse_line(data []byte) error {
 			for _, tok := range tmp {
 				tok := strings.TrimSpace(tok)
 				if len(tok) > 0 {
-					fmt.Printf(" -- adding [%v]\n", tok)
+					//fmt.Printf(" -- adding [%v]\n", tok)
 					tokens = append(tokens, tok)
 				}
 			}
