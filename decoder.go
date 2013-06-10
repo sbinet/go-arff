@@ -17,7 +17,6 @@ var (
 	errComment = fmt.Errorf("arff.Decode: comment line")
 )
 
-
 type Decoder struct {
 	Header Header
 

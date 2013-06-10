@@ -45,12 +45,12 @@ func TestDecodeMap(t *testing.T) {
 		}
 		fmt.Fprintf(
 			o,
-			"%v %v %v %v %v\n", 
-			m["sepallength"], 
-			m["sepalwidth"], 
+			"%v %v %v %v %v\n",
+			m["sepallength"],
+			m["sepalwidth"],
 			m["petallength"],
 			m["petalwidth"],
-			m["class"], 
+			m["class"],
 		)
 	}
 
@@ -90,7 +90,7 @@ func TestDecodeStruct(t *testing.T) {
 		t.Fatalf("error: %v\n", err)
 	}
 	defer os.Remove(o.Name())
-	
+
 	//fmt.Printf("arff.Header.Comment:\n%v\n", dec.Header.Comment)
 	fmt.Fprintf(o, "arff.Header.Relation: %v\n", dec.Header.Relation)
 	fmt.Fprintf(o, "arff.Header.Attrs:    %v\n", len(dec.Header.Attrs))
@@ -114,13 +114,13 @@ func TestDecodeStruct(t *testing.T) {
 			break
 		}
 		fmt.Fprintf(
-			o, 
-			"%v %v %v %v %v\n", 
-			m.Sepallength, 
-			m.Sepalwidth, 
-			m.Petallength, 
-			m.Petalwidth, 
-			m.Class, 
+			o,
+			"%v %v %v %v %v\n",
+			m.Sepallength,
+			m.Sepalwidth,
+			m.Petallength,
+			m.Petalwidth,
+			m.Class,
 		)
 	}
 
@@ -142,7 +142,7 @@ func TestDecodeStruct(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 }
 
 func TestEncodeMap(t *testing.T) {
@@ -163,23 +163,23 @@ func TestEncodeMap(t *testing.T) {
 	enc.Header.AddAttr("a_int", arff.Integer, nil)
 	enc.Header.AddAttr("a_float", arff.Real, nil)
 	enc.Header.AddAttr("a_number", arff.Numeric, nil)
-	enc.Header.AddAttr("a_string", arff.Nominal, []string{"a","b","c"})
+	enc.Header.AddAttr("a_string", arff.Nominal, []string{"a", "b", "c"})
 
 	type M map[string]interface{}
-	for _,m := range []M{
+	for _, m := range []M{
 		M{
-			"a_int": 42,
-			"a_float": 666.1,
+			"a_int":    42,
+			"a_float":  666.1,
 			"a_number": 777.1,
 			"a_string": "a",
 		},
 		M{
-			"a_int": 43,
-			"a_float": 666.2,
+			"a_int":    43,
+			"a_float":  666.2,
 			"a_number": 777.2,
 			"a_string": "b",
 		},
-	}{
+	} {
 		err = enc.Encode(m)
 		if err != nil {
 			t.Fatalf("error: %v\n", err)
@@ -204,9 +204,8 @@ func TestEncodeMap(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	
-}
 
+}
 
 func TestEncodeStruct(t *testing.T) {
 	o, err := os.Create("test.struct.arff")
@@ -226,15 +225,15 @@ func TestEncodeStruct(t *testing.T) {
 	enc.Header.AddAttr("a_int", arff.Integer, nil)
 	enc.Header.AddAttr("a_float", arff.Real, nil)
 	enc.Header.AddAttr("a_number", arff.Numeric, nil)
-	enc.Header.AddAttr("a_string", arff.Nominal, []string{"a","b","c"})
+	enc.Header.AddAttr("a_string", arff.Nominal, []string{"a", "b", "c"})
 
 	type S struct {
-		I int `arff:"a_int"`
+		I int     `arff:"a_int"`
 		F float64 `arff:"a_float"`
 		N float64 `arff:"a_number"`
-		S string `arff:"a_string"`
+		S string  `arff:"a_string"`
 	}
-	for _,m := range []S{
+	for _, m := range []S{
 		{
 			I: 42,
 			F: 666.1,
@@ -247,7 +246,7 @@ func TestEncodeStruct(t *testing.T) {
 			N: 777.2,
 			S: "b",
 		},
-	}{
+	} {
 		err = enc.Encode(&m)
 		if err != nil {
 			t.Fatalf("error: %v\n", err)
@@ -273,4 +272,3 @@ func TestEncodeStruct(t *testing.T) {
 		t.Fatal(err)
 	}
 }
-

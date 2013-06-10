@@ -15,14 +15,13 @@ import (
 type Encoder struct {
 	Header Header
 
-	w       io.Writer
-	state   state
-
+	w     io.Writer
+	state state
 }
 
 func NewEncoder(w io.Writer) (*Encoder, error) {
 	enc := &Encoder{
-		w:w,
+		w:     w,
 		state: st_comment,
 	}
 	return enc, nil
@@ -55,12 +54,12 @@ func (enc *Encoder) Encode(v interface{}) error {
 		if len(data) != len(mm) {
 			return fmt.Errorf(
 				"arff.Encode: number of attributes don't match (got %d, expected %d)",
-				len(mm), 
+				len(mm),
 				len(data),
 			)
 		}
 		for i, attr := range enc.Header.Attrs {
-			vv,ok := mm[attr.Name]
+			vv, ok := mm[attr.Name]
 			if !ok {
 				return fmt.Errorf(
 					"arff.Encode: missing key [%s] in input map",
@@ -70,7 +69,7 @@ func (enc *Encoder) Encode(v interface{}) error {
 			data[i] = vv
 		}
 		return enc.write(data)
-		
+
 	case reflect.Ptr:
 		// ok.
 
@@ -80,7 +79,7 @@ func (enc *Encoder) Encode(v interface{}) error {
 			v, v,
 		)
 	}
-	
+
 	rv = reflect.Indirect(rv)
 	switch rv.Kind() {
 	case reflect.Struct:
@@ -114,7 +113,7 @@ func (enc *Encoder) Encode(v interface{}) error {
 		}
 		return enc.write(data)
 	}
-	
+
 	panic("unreachable")
 }
 
@@ -147,7 +146,7 @@ func (enc *Encoder) init() error {
 		return err
 	}
 
-	for _,attr := range hdr.Attrs {
+	for _, attr := range hdr.Attrs {
 		err = nil
 		switch attr.Type {
 		case Numeric, Real, Integer:
@@ -187,9 +186,9 @@ func (enc *Encoder) init() error {
 func (enc *Encoder) write(data []interface{}) error {
 	attrs := enc.Header.Attrs
 	imax := len(attrs)
-	for i,attr := range attrs {
+	for i, attr := range attrs {
 		str := "%v,"
-		if i == imax -1 {
+		if i == imax-1 {
 			str = "%v"
 		}
 		_, err := fmt.Fprintf(

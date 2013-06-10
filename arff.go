@@ -87,9 +87,9 @@ type Attr struct {
 // from the map or ptr-to-struct v
 func NewHeaderFrom(v interface{}) (*Header, error) {
 	hdr := Header{
-		Comment: "no comment",
+		Comment:  "no comment",
 		Relation: "mydata",
-		Attrs: nil,
+		Attrs:    nil,
 	}
 	err := hdr.init(v)
 	if err != nil {
@@ -101,7 +101,7 @@ func NewHeaderFrom(v interface{}) (*Header, error) {
 func (hdr *Header) AddAttr(name string, atype AttrType, data []string) error {
 	// TODO: check for duplicates
 	hdr.Attrs = append(
-		hdr.Attrs, 
+		hdr.Attrs,
 		Attr{
 			Name: name,
 			Type: atype,
@@ -121,7 +121,7 @@ func (hdr *Header) init(v interface{}) error {
 		Type reflect.Type
 	}
 	v_attrs := make([]attr_t, 0)
-	
+
 	rv := reflect.ValueOf(v)
 	switch rv.Kind() {
 	case reflect.Map:
@@ -134,7 +134,7 @@ func (hdr *Header) init(v interface{}) error {
 		}
 		for k := range mm {
 			rkv := reflect.ValueOf(mm[k])
-			v_attrs = append(v_attrs, attr_t{Name:k, Type: rkv.Type()})
+			v_attrs = append(v_attrs, attr_t{Name: k, Type: rkv.Type()})
 		}
 
 	case reflect.Ptr:
@@ -146,7 +146,7 @@ func (hdr *Header) init(v interface{}) error {
 			nfields := rt.NumField()
 			for i := 0; i < nfields; i++ {
 				f := rt.Field(i)
-				v_attrs = append(v_attrs, attr_t{Name:f.Name, Type: f.Type})
+				v_attrs = append(v_attrs, attr_t{Name: f.Name, Type: f.Type})
 			}
 		default:
 			return fmt.Errorf("arff.Header: invalid type (expected a pointer to struct, got %T)",
@@ -161,9 +161,9 @@ func (hdr *Header) init(v interface{}) error {
 		)
 	}
 
-	for _,vattr := range v_attrs {
+	for _, vattr := range v_attrs {
 		switch vattr.Type.Kind() {
-			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			hdr.Attrs = append(
 				hdr.Attrs,
@@ -185,7 +185,7 @@ func (hdr *Header) init(v interface{}) error {
 
 		default:
 			return fmt.Errorf(
-				"arff.Header: unhandled type (%s) (valids are: floats, ints)", 
+				"arff.Header: unhandled type (%s) (valids are: floats, ints)",
 				vattr.Type,
 			)
 		}
