@@ -15,6 +15,8 @@ http://godoc.org/github.com/sbinet/go-arff
 
 ## Example
 
+### Writing `ARFF` files
+
 ```go
  f, err := os.Create("foo.arff")
  enc, err := arff.NewEncoder(f)
@@ -35,6 +37,8 @@ http://godoc.org/github.com/sbinet/go-arff
  f.Sync()
  f.Close()
 ```
+
+### Reading `ARFF` files
 
 ```go
  f, err := os.Open("foo.arff")
