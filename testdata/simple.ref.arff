@@ -6,7 +6,8 @@
 @attribute a_int Integer
 @attribute a_float Real
 @attribute a_number Numeric
+@attribute a_string {a,b,c}
 
 @data
-42,666.1,777.1
-43,666.2,777.2
+42,666.1,777.1,a
+43,666.2,777.2,b
