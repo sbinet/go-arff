@@ -83,21 +83,6 @@ type Attr struct {
 	Data []string
 }
 
-// NewHeaderFrom returns a Header with the Attrs automatically generated
-// from the map or ptr-to-struct v
-func NewHeaderFrom(v interface{}) (*Header, error) {
-	hdr := Header{
-		Comment:  "no comment",
-		Relation: "mydata",
-		Attrs:    nil,
-	}
-	err := hdr.init(v)
-	if err != nil {
-		return nil, err
-	}
-	return &hdr, nil
-}
-
 func (hdr *Header) AddAttr(name string, atype AttrType, data []string) error {
 	// TODO: check for duplicates
 	hdr.Attrs = append(
