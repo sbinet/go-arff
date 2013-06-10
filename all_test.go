@@ -163,6 +163,7 @@ func TestEncodeMap(t *testing.T) {
 	enc.Header.AddAttr("a_int", arff.Integer, nil)
 	enc.Header.AddAttr("a_float", arff.Real, nil)
 	enc.Header.AddAttr("a_number", arff.Numeric, nil)
+	enc.Header.AddAttr("a_string", arff.Nominal, []string{"a","b","c"})
 
 	type M map[string]interface{}
 	for _,m := range []M{
@@ -170,11 +171,13 @@ func TestEncodeMap(t *testing.T) {
 			"a_int": 42,
 			"a_float": 666.1,
 			"a_number": 777.1,
+			"a_string": "a",
 		},
 		M{
 			"a_int": 43,
 			"a_float": 666.2,
 			"a_number": 777.2,
+			"a_string": "b",
 		},
 	}{
 		err = enc.Encode(m)
@@ -223,22 +226,26 @@ func TestEncodeStruct(t *testing.T) {
 	enc.Header.AddAttr("a_int", arff.Integer, nil)
 	enc.Header.AddAttr("a_float", arff.Real, nil)
 	enc.Header.AddAttr("a_number", arff.Numeric, nil)
+	enc.Header.AddAttr("a_string", arff.Nominal, []string{"a","b","c"})
 
 	type S struct {
 		I int `arff:"a_int"`
 		F float64 `arff:"a_float"`
 		N float64 `arff:"a_number"`
+		S string `arff:"a_string"`
 	}
 	for _,m := range []S{
 		{
 			I: 42,
 			F: 666.1,
 			N: 777.1,
+			S: "a",
 		},
 		{
 			I: 43,
 			F: 666.2,
 			N: 777.2,
+			S: "b",
 		},
 	}{
 		err = enc.Encode(&m)
