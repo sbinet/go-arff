@@ -105,9 +105,12 @@ func (hdr *Header) AddAttr(name string, atype AttrType, data []string) error {
 		Attr{
 			Name: name,
 			Type: atype,
-			Data: nil,
+			Data: make([]string, len(data)),
 		},
 	)
+	if len(data) > 0 {
+		copy(hdr.Attrs[len(hdr.Attrs)-1].Data, data)
+	}
 	return nil
 }
 
