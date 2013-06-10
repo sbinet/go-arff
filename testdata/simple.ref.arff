@@ -1,0 +1,12 @@
+% a dummy comment
+% another one
+
+@relation simple
+
+@attribute a_int Integer
+@attribute a_float Real
+@attribute a_number Numeric
+
+@data
+42,666.1,777.1
+43,666.2,777.2
