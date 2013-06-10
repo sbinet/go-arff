@@ -151,7 +151,7 @@ func TestEncodeMap(t *testing.T) {
 		t.Fatalf("error: %v\n", err)
 	}
 
-	//defer os.Remove(o.Name())
+	defer os.Remove(o.Name())
 
 	enc, err := arff.NewEncoder(o)
 	if err != nil {
@@ -211,7 +211,7 @@ func TestEncodeStruct(t *testing.T) {
 		t.Fatalf("error: %v\n", err)
 	}
 
-	//defer os.Remove(o.Name())
+	defer os.Remove(o.Name())
 
 	enc, err := arff.NewEncoder(o)
 	if err != nil {
