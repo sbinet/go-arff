@@ -68,7 +68,7 @@ func (dec *Decoder) Decode(v interface{}) error {
 		break
 	}
 
-	if err == errNoData || err == errComment {
+	if err == errNoData || err == errComment || dec.data == nil {
 		return io.EOF
 	}
 
