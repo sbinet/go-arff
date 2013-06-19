@@ -179,7 +179,9 @@ func (dec *Decoder) parse_header() error {
 func (dec *Decoder) parse_line(data []byte) error {
 	var err error
 
+	//fmt.Printf("==> line:%d: %v...\n", dec.line, string(data))
 	if len(data) == 0 {
+		//fmt.Printf("line:%d: <no-data>\n", dec.line)
 		return errNoData
 	}
 
