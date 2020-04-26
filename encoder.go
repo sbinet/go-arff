@@ -3,9 +3,11 @@ package arff
 import (
 	"bufio"
 	"fmt"
+
 	//"os"
 	"bytes"
 	"io"
+
 	//"math"
 	"reflect"
 	//"strconv"
@@ -149,7 +151,7 @@ func (enc *Encoder) init() error {
 	for _, attr := range hdr.Attrs {
 		err = nil
 		switch attr.Type {
-		case Numeric, Real, Integer:
+		case Numeric, Real, Integer, String:
 			_, err = fmt.Fprintf(
 				enc.w,
 				"@attribute %s %v\n",
